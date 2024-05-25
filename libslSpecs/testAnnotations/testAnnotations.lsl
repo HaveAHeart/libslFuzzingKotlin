@@ -15,9 +15,7 @@ library any
 //property-based testing quicksheck annotations JQwik (junit-quickcheck)?
 //вынимать ограничения/связи из LibSL при фаззинге
 
-
 import java.common;
-//import com.spbpu;
 
 type URLHolder is com.spbpu.URLHolder for Foo {}
 type Person is com.spbpu.Person for Foo {}
@@ -82,36 +80,12 @@ dependsWith: string = "return int1 + 1"
 //}
 
 
-
-//automaton URLLoaderAutomaton(var initURL: string): URLLoader {
-//    initstate Initialized;
-//
-//    shift Initialized -> self by [
-//        runLoaderWithLength,
-//    ];
-//
-//    var URL: string = "";
-//
-//    fun runLoaderWithLength(@fuzzString `strURL`: string, @fuzzInt `sizeURL`: int) {
-//        ensures lengthCorrect: strURL.length == sizeURL;
-//    }
-//
-//    fun compareIntegers(@smallerInt int1: int, @largerInt int2: int) {
-//        ensures firstIsSmaller: int1 < int2;
-//    }
-//
-//    fun compareIntAndPlusOne(@smallerInt int1: int, @alwaysPlusOne int2: int) {
-//        ensures int1 < int2;
-//    }
-//}
 annotation returnLen (
 class: string = "kotlin.Int",
 name: string = "len",
 minValue: int32 = 10,
 maxValue: int32 = 20
 );
-
-
 
 annotation returnURL (
 class: string = "kotlin.String",
@@ -154,15 +128,9 @@ maxLength: int32 = 25
 );
 
 automaton URLHolder(var initURL: string): URLHolder {
-    initstate Initialized;
-
-    shift Initialized -> self by [
-        runLoaderWithLength,
-    ];
-
     @returnURL
     @dependableLen
-    fun getURL(): URLHolder {
+    fun getNewURLHolder(): URLHolder {
         ensures isURLPresent: `genResult.getURL().length` > 0 ;
         ensures isLenPresent: `genResult.getLen()` > 0 ;
     }

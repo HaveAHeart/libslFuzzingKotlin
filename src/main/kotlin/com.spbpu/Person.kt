@@ -11,7 +11,7 @@ package com.spbpu
         this.isBald = isBald
     }
 }*/
-class Person(val name: String, val height: Float, val isBald: Boolean) {
+class Person(var name: String, var height: Float, var isBald: Boolean) {
     fun getPerson(): Person {
         return this
     }

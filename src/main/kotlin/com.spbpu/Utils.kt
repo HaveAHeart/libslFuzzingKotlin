@@ -8,8 +8,11 @@ import org.jetbrains.research.libsl.nodes.Annotation
 import org.jetbrains.research.libsl.nodes.references.TypeReference
 import org.jetbrains.research.libsl.type.StructuredType
 import org.jetbrains.research.libsl.type.Type
+import java.nio.file.Path
 import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
 import kotlin.io.path.createDirectory
+import kotlin.io.path.exists
 import kotlin.reflect.KClass
 
 class Utils {
@@ -37,7 +40,6 @@ class Utils {
 
         fun resolveLibSLTypeToClassName(types: List<Type>, typeReference: TypeReference?): ClassName {
             val klazz = resolveLibSLType(typeReference)
-            println("resolved klazz is $klazz")
             var fullName = ""
             if (klazz == null) {
                 val type = types.find { it.name == typeReference!!.name } as StructuredType
@@ -46,15 +48,11 @@ class Utils {
             else {
                 fullName = klazz.qualifiedName!!
             }
-            println("fullname $fullName")
 
-            println("split ${fullName.split(".")}")
             val typeName = fullName.split(".").last()
             val packageName = fullName.split(".").dropLast(1).joinToString(".")
-            println("$packageName $typeName")
             val name = ClassName(packageName, typeName)
 
-            println("name ${name.canonicalName}")
             return name
         }
 
@@ -87,10 +85,10 @@ class Utils {
             return castExpression?.value
         }
 
-        fun cleanGenFolder() {
-            val tmpPath = Path("src/test/kotlin/com/spbpu/genFuzzing")
-            tmpPath.toFile().deleteRecursively()
-            tmpPath.createDirectory()
+        fun cleanGenFolder(basePath: String) {
+            val tmpPath = Path("$basePath/com/spbpu/genFuzzing")
+            if (tmpPath.exists()) { tmpPath.toFile().deleteRecursively() }
+            tmpPath.createDirectories()
         }
     }
 }

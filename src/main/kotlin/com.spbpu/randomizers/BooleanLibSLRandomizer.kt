@@ -9,7 +9,6 @@ class BooleanLibSLRandomizer(initDefaultValue: Boolean? = null): Randomizer<Bool
     init {
         println("BooleanGen initialized. Default value: ${defaultValue ?: "not specified"}")
     }
-
     fun getLastGenValue(): Boolean = lastGenValue
 
     override fun getRandomValue(): Boolean {

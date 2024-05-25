@@ -12,19 +12,15 @@ import com.spbpu.LibSLParserUtils.Companion.getFieldClassFromAnnotation
 import com.spbpu.LibSLParserUtils.Companion.getParamsFromAnnotation
 import com.spbpu.LibSLParserUtils.Companion.isDependableAnnotation
 import com.spbpu.Utils.Companion.getRandomizedTypes
-import com.spbpu.Utils.Companion.resolveLibSLType
 import com.spbpu.Utils.Companion.resolveLibSLTypeToClassName
-import com.spbpu.randomizers.StringLibSLRandomizer
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.jeasy.random.EasyRandomParameters
 import org.jetbrains.research.libsl.nodes.Annotation
 import org.jetbrains.research.libsl.nodes.Automaton
 import org.jetbrains.research.libsl.nodes.Function
-import org.jetbrains.research.libsl.nodes.FunctionArgument
 import org.jetbrains.research.libsl.nodes.Library
 import org.jetbrains.research.libsl.type.Type
-import kotlin.reflect.KClass
 
 class GeneratorGenerator {
     companion object {
@@ -45,7 +41,6 @@ class GeneratorGenerator {
             val funcName = func.name
             val returnType = func.returnType
             val argClass = resolveLibSLTypeToClassName(types, returnType)
-            println(argClass)
             val funcAnnotationNames = func.annotationUsages.map { it.annotationReference.name }
             val funcAnnotations = annotations.filter { it.name in funcAnnotationNames }
 
@@ -68,7 +63,6 @@ class GeneratorGenerator {
 
         }
 
-
         fun makeDependablePropertyRandomizer(varType: ClassName, varName: String, genParams: List<String>, generatedAnnotations: List<Pair<String, PropertySpec?>>): PropertySpec? {
             val dependsOn = genParams.first()
             val dependsWith = genParams[1]
@@ -88,7 +82,6 @@ class GeneratorGenerator {
             val varType = ClassName.bestGuess(getFieldClassFromAnnotation(annotation))
 
             val isDependable = isDependableAnnotation(annotation)
-            println("$varType isDep $isDependable")
             val params = if (isDependable) { getDependableParamsFromAnnotation(annotation).drop(1) }
                 else { getParamsFromAnnotation(annotation, varType).drop(1) }
             val varName = if (isDependable) { getDependableParamsFromAnnotation(annotation).first() }
@@ -162,17 +155,13 @@ class GeneratorGenerator {
             val isRandomisedNotGenerated = (getRandomizedTypes().map { it.qualifiedName }.find { it == varType.canonicalName } != null)
             if (isRandomisedNotGenerated) {
 
-                println(">>>>>")
-                randomizers.forEach { println("${it.second?.type}") }
                 val resRandomizer = randomizers.find {
                     val className = it.second?.type?.toString()
                     val simpleClassName = className?.split(".")?.last()
                     val generatedType = classToRandomizerClass.entries.find { it.value == simpleClassName }?.key?.split(".")?.last()
-                    println("${generatedType} ${varType.simpleName}")
                     varType.simpleName == generatedType
 
                 }
-                //val resRandomizer = randomizers.find { it.second.type }
                 genFunBuilder
                     .addCode("val filler = random.nextBoolean()\n")
                     .addCode("return %N.randomValue", resRandomizer?.second?.name)
@@ -188,18 +177,39 @@ class GeneratorGenerator {
             val genFun = genFunBuilder.build()
             typeBuilder.addFunction(genFun)
 
+            val retFunBuilder = FunSpec.builder("getValue")
+                .addModifiers(KModifier.PUBLIC)
+                .returns(varType)
 
+            if (isRandomisedNotGenerated) {
+                val resRandomizer = randomizers.find {
+                    val className = it.second?.type?.toString()
+                    val simpleClassName = className?.split(".")?.last()
+                    val generatedType = classToRandomizerClass.entries.find { it.value == simpleClassName }?.key?.split(".")?.last()
+                    varType.simpleName == generatedType
+
+                }
+                retFunBuilder
+                    .addCode("return %N.randomValue", resRandomizer?.second?.name)
+            }
+            else {
+                val erType = ClassName("org.jeasy.random", "EasyRandom")
+                retFunBuilder
+                    .addCode("val generatedValue = %T(erConfig).nextObject(${varType.simpleName}::class.java)\n", erType)
+                    .addCode("lastGenVal = generatedValue\n")
+                    .addCode("return generatedValue\n")
+            }
+            val retFun = retFunBuilder.build()
+            typeBuilder.addFunction(retFun)
 
 
             builder.addType(typeBuilder.build())
             return builder.build()
         }
 
-
         fun makeGeneratorName(nameParts: List<String>): String {
             return nameParts.joinToString("_", postfix = "_Generator")
         }
-
 
     }
 }

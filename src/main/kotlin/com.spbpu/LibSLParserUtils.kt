@@ -103,7 +103,6 @@ class LibSLParserUtils {
 
         fun getDependableParamsFromAnnotation(annotation: Annotation): List<String> {
             val args = annotation.argumentDescriptors
-            println("for params from annotation args ${args}")
             val name = Utils.getStringFromExpression(args.find { it.name == "name" }?.initialValue, "result")
             val dependsOn = Utils.getStringFromExpression(args.find { it.name == "dependsOn" }?.initialValue, "it")
             val dependsWith = Utils.getStringFromExpression(args.find { it.name == "dependsWith" }?.initialValue, "it")
