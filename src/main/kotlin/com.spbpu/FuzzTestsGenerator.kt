@@ -2,17 +2,16 @@ package com.spbpu
 
 import com.pholser.junit.quickcheck.From
 import com.spbpu.GeneratorGenerator.Companion.makeGeneratorName
-import com.spbpu.Utils.Companion.resolveLibSLTypeToClassName
+import com.spbpu.LibSLParserUtils.Companion.resolveLibSLTypeToClassName
 import com.squareup.kotlinpoet.*
 import edu.berkeley.cs.jqf.fuzz.Fuzz
 import edu.berkeley.cs.jqf.fuzz.JQF
-import org.jetbrains.research.libsl.nodes.*
-import org.jetbrains.research.libsl.nodes.Annotation
+import org.jetbrains.research.libsl.nodes.ContractKind
 import org.jetbrains.research.libsl.nodes.Function
+import org.jetbrains.research.libsl.nodes.Library
 import org.jetbrains.research.libsl.type.Type
 import org.junit.Assert
 import org.junit.runner.RunWith
-import kotlin.reflect.KClass
 
 class FuzzTestsGenerator {
     companion object {

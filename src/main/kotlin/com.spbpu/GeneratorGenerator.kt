@@ -10,9 +10,9 @@ import com.spbpu.LibSLParserUtils.Companion.classToRandomizerClass
 import com.spbpu.LibSLParserUtils.Companion.getDependableParamsFromAnnotation
 import com.spbpu.LibSLParserUtils.Companion.getFieldClassFromAnnotation
 import com.spbpu.LibSLParserUtils.Companion.getParamsFromAnnotation
+import com.spbpu.LibSLParserUtils.Companion.getRandomizedTypes
 import com.spbpu.LibSLParserUtils.Companion.isDependableAnnotation
-import com.spbpu.Utils.Companion.getRandomizedTypes
-import com.spbpu.Utils.Companion.resolveLibSLTypeToClassName
+import com.spbpu.LibSLParserUtils.Companion.resolveLibSLTypeToClassName
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.jeasy.random.EasyRandomParameters
